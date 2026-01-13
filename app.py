@@ -22,7 +22,7 @@ st.info(
 # ===============================
 # 2. Gemini API 설정
 # ===============================
-API_KEY = os.getenv("GEMINI_API_KEY", "여기에_본인_API_KEY")
+API_KEY = "AIzaSyDU7Uw4CfwSbOU3hxDVhp-cAzRryhEvbqE"
 
 if not API_KEY or "여기에" in API_KEY:
     st.error("❌ Gemini API 키가 설정되지 않았습니다.")
