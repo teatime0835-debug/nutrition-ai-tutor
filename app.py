@@ -6,12 +6,12 @@ import os
 import warnings
 
 # ===============================
-# (선택) 불필요한 경고 숨기기
+# (선택) 경고 숨기기
 # ===============================
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 # ===============================
-# 1. Streamlit 기본 설정 (최상단)
+# 1. Streamlit 기본 설정
 # ===============================
 st.set_page_config(
     page_title="청소년 AI 영양 튜터",
@@ -39,28 +39,35 @@ if not API_KEY:
 client = OpenAI(api_key=API_KEY)
 
 # ===============================
-# 3. 이미지 업로드 (학생은 이것만!)
+# 3. 이미지 업로드 (학생 입력은 이것만)
 # ===============================
 uploaded_file = st.file_uploader(
     "📷 오늘 먹은 급식 사진 업로드 (JPG, PNG)",
     type=["jpg", "jpeg", "png"]
 )
 
-def encode_image(file) -> str:
-    """이미지를 base64로 인코딩"""
-    return base64.b64encode(file.read()).decode("utf-8")
-
+# ===============================
+# 4. 이미지 표시
+# ===============================
 if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="업로드된 식단 사진", width=400)
 
+    # 이미지 크기 제한 (발표 안정성)
+    if len(uploaded_file.getvalue()) > 5_000_000:
+        st.error("이미지 파일이 너무 큽니다. (5MB 이하 권장)")
+        st.stop()
+
     # ===============================
-    # 4. 분석 버튼
+    # 5. 분석 버튼
     # ===============================
     if st.button("🚀 영양 분석 리포트 생성"):
         with st.spinner("AI 영양 튜터가 식단을 분석 중입니다..."):
             try:
-                base64_image = encode_image(uploaded_file)
+                # ✅ base64 안전 인코딩 (핵심 수정)
+                base64_image = base64.b64encode(
+                    uploaded_file.getvalue()
+                ).decode("utf-8")
 
                 prompt = """
 너는 대한민국 중·고등학생을 위한 식생활 교육 전문가이자 영양 교사야.
@@ -68,7 +75,7 @@ if uploaded_file is not None:
 📌 반드시 지켜야 할 원칙
 - 이 분석은 **사진을 바탕으로 한 교육용 추정 분석**이야.
 - 실제 영양소 수치와 다를 수 있음을 분명히 밝혀.
-- 질병 진단, 체중 조절 지시, 의료적 조언은 하지 마.
+- 질병 진단, 체중 감량·증가 지시, 의료적 조언은 하지 마.
 
 📌 분석 기준
 - 「2020 한국인 영양소 섭취기준」
@@ -96,7 +103,7 @@ if uploaded_file is not None:
 #### 3️⃣ 💡 청소년 맞춤 영양 코칭
 - 현재 식단의 긍정적인 점
 - 다음 식사에서 보완하면 좋은 영양소와 식품 예시
-- 청소년기에 균형 잡힌 식사의 중요성
+- 청소년기에 균형 잡힌 식사가 중요한 이유
 
 #### 4️⃣ ⚠️ 교육용 안내
 - 본 결과는 참고용이며 전문적인 영양 상담을 대체하지 않음을 명확히 안내
@@ -113,13 +120,13 @@ if uploaded_file is not None:
                                     "type": "image_url",
                                     "image_url": {
                                         "url": f"data:image/jpeg;base64,{base64_image}"
-                                    },
-                                },
-                            ],
+                                    }
+                                }
+                            ]
                         }
                     ],
                     temperature=0.3,
-                    max_tokens=1200,
+                    max_tokens=1200
                 )
 
                 st.markdown("---")
@@ -132,7 +139,7 @@ if uploaded_file is not None:
                 st.code(str(e))
 
 # ===============================
-# 5. 푸터
+# 6. 푸터
 # ===============================
 st.markdown("---")
 st.caption("© 2026 인공지능융합교육 프로젝트 | 청소년 AI 영양 튜터 (교육용)")
