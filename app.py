@@ -38,7 +38,8 @@ if not API_KEY:
 genai.configure(api_key=API_KEY)
 
 # ✅ Streamlit Cloud에서 현재 가장 안정적인 멀티모달 모델
-model = genai.GenerativeModel("models/gemini-1.5-flash-latest")
+model = genai.GenerativeModel("models/gemini-1.0-pro-vision")
+
 
 # (디버그용 – 문제 생기면 확인)
 # st.caption(f"🔍 사용 모델: {model.model_name}")
@@ -131,3 +132,4 @@ if uploaded_file is not None:
 # ===============================
 st.markdown("---")
 st.caption("© 2026 인공지능융합교육 프로젝트 | 청소년 AI 영양 튜터 (교육용)")
+
