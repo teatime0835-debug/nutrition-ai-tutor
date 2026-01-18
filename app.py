@@ -83,13 +83,13 @@ if uploaded_file is not None:
 
 형식 예시:
 [
-  {"food": "쌀밥", "amount": "보통"},
+  {"food": "쌀밥", "amount": "대체로"},
   {"food": "된장국", "amount": "절반"},
-  {"food": "제육볶음", "amount": "보통"}
+  {"food": "제육볶음", "amount": "모두"}
 ]
 
 섭취량은 반드시 다음 중 하나:
-보통 / 절반 / 소량 / 거의 먹지 않음
+모두 / 대체로 / 절반 / 소량 / 거의 먹지 않음
 """
 
                 response = client.chat.completions.create(
@@ -137,6 +137,8 @@ if st.session_state.foods:
 
     edited_foods = []
 
+    intake_options = ["모두", "대체로", "절반", "소량", "거의 먹지 않음"]
+
     for i, item in enumerate(st.session_state.foods):
         col1, col2 = st.columns([2, 1])
 
@@ -150,8 +152,9 @@ if st.session_state.foods:
         with col2:
             amount = st.selectbox(
                 "섭취량",
-                ["보통", "절반", "소량", "거의 먹지 않음"],
-                index=["보통", "절반", "소량", "거의 먹지 않음"].index(item["amount"]),
+                intake_options,
+                index=intake_options.index(item["amount"])
+                if item["amount"] in intake_options else 1,
                 key=f"amount_{i}"
             )
 
@@ -193,6 +196,7 @@ if st.session_state.foods:
 | 탄수화물 | | | |
 | 단백질 | | | |
 | 지방 | | | |
+
 
 ※ 실제 섭취량과 다를 수 있음
 
