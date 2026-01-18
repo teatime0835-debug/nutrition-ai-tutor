@@ -207,7 +207,7 @@ if st.session_state.foods:
 - 청소년기 식사의 중요성 설명
 
 #### ⚠️ 유의사항
-- 본 결과는 교육용 참고 자료임
+- 본 결과는 교육용 참고 자료입니다.
 """
 
                 response = client.chat.completions.create(
@@ -230,3 +230,4 @@ if st.session_state.foods:
 # ===============================
 st.markdown("---")
 st.caption("© 2026 인공지능융합교육 프로젝트 | 청소년 AI 영양 튜터 (교육용)")
+
